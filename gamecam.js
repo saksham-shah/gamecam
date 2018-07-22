@@ -25,6 +25,12 @@ function GameCam(x_, y_, w_, h_) {
     this.screen = createGraphics(this.w, this.h);
 
     this.toFollow = null;
+
+    this.latestFrames = [];
+
+    this.lastSnap = 0;
+
+    this.gameclip = null;
 }
 
 // Converts the current GameCam screen into a p5 image object
@@ -37,13 +43,29 @@ GameCam.prototype.update = function() {
         this.x = this.toFollow.x - this.w / 2;
         this.y = this.toFollow.y - this.h / 2;
     } else {
-        if (keyIsDown(LEFT_ARROW)) this.x -= 5;
-        if (keyIsDown(UP_ARROW)) this.y -= 5;
-        if (keyIsDown(RIGHT_ARROW)) this.x += 5;
-        if (keyIsDown(DOWN_ARROW)) this.y += 5;
+        if (keyIsDown(LEFT_ARROW)) this.x -= 5 * dt;
+        if (keyIsDown(UP_ARROW)) this.y -= 5 * dt;
+        if (keyIsDown(RIGHT_ARROW)) this.x += 5 * dt;
+        if (keyIsDown(DOWN_ARROW)) this.y += 5 * dt;
     }
-    if (keyIsDown(87)) this.zoom += 0.05;
-    if (keyIsDown(83)) this.zoom -= 0.05;
+    if (keyIsDown(87)) this.zoom += 0.05 * dt;
+    if (keyIsDown(83)) this.zoom -= 0.05 * dt;
+    this.takeFrameSnap();
+}
+
+GameCam.prototype.takeFrameSnap = function() {
+    this.lastSnap += dt;
+    if (this.lastSnap >= 0.8) {
+        this.latestFrames.push(this.snapshot());
+        this.lastSnap = 0;
+        if (this.latestFrames.length > 300) {
+            this.latestFrames.splice(0, 1);
+        }
+    }
+}
+
+GameCam.prototype.getGameClip = function() {
+    return new GameClip(this.latestFrames.slice());
 }
 
 GameCam.prototype.follow = function(pos) {
@@ -60,7 +82,16 @@ GameCam.prototype.follow = function(pos) {
 
 // Draws the GameCam screen to the canvas
 GameCam.prototype.draw = function(x, y) {
-    image(this.snapshot(), x, y, this.w, this.h);
+    if (this.gameclip) {
+        var img = this.gameclip.next();
+    } else {
+        var img = this.snapshot();
+    }
+    if (img === false) {
+        img = this.snapshot();
+        this.gameclip = null;
+    }
+    image(img, x, y, this.w, this.h);
     noFill();
     strokeWeight(4);
     stroke(255, 0, 0);

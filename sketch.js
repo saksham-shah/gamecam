@@ -1,27 +1,49 @@
 var gc, img, freeze;
+var pos;
+var gcs;
 
 function setup() {
     createCanvas(600, 400);
-    gc = createGameCam(0, 0, width/2, height);
-    img = gc.snapshot();
+    pos = {
+        x: 300,
+        y: 200
+    }
+    stillPos = {
+        x: 300,
+        y: 200
+    }
+    var gc1 = createGameCam(0, 0, width/2, height);
+    var gc2 = createGameCam(0, 0, width/2, height);
+    gc1.follow(pos);
+    gc2.follow(stillPos);
+    gcs = [gc1, gc2];
 }
 
 function draw() {
+    if (keyIsDown(LEFT_ARROW)) pos.x -= 5;
+    if (keyIsDown(UP_ARROW)) pos.y -= 5;
+    if (keyIsDown(RIGHT_ARROW)) pos.x += 5;
+    if (keyIsDown(DOWN_ARROW)) pos.y += 5;
+
+
+    gcs[0].update();
+    gcs[1].update();
+
     background(200);
-    gc.background(0);
-    gc.fill(255);
-    gc.noStroke();
-    gc.circle(300, 200, 100);
-    gc.draw(width/2, 0);
 
-    if (freeze) {
-        image(img, 0, 0, width, height);
+    for (var i = 0; i < gcs.length; i++) {
+        gc = gcs[i];
+        gc.background(0);
+        gc.fill(color(255, 0, 0));
+        gc.noStroke();
+        gc.circle(pos.x, pos.y, 10);
+        gc.fill(color(255));
+        gc.circle(300, 200, 100);
     }
+    gcs[0].draw(0, 0);
+    gcs[1].draw(width/2, 0);
 
-    if (keyIsDown(LEFT_ARROW) || keyIsDown(65)) gc.x -= 5;
-    if (keyIsDown(UP_ARROW) || keyIsDown(87)) gc.y -= 5;
-    if (keyIsDown(RIGHT_ARROW) || keyIsDown(68)) gc.x += 5;
-    if (keyIsDown(DOWN_ARROW) || keyIsDown(83)) gc.y += 5;
+
 
     // fill(255);
     // noStroke();

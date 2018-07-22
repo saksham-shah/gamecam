@@ -18,7 +18,7 @@ function setup() {
     // gc1.follow(pos);
     // gc2.follow(stillPos);
     // gcs = [gc1, gc2];
-    gc = createGameCam(0, 0, width/2, height);
+    gc = createGameCam(0, 0, width, height);
     gc.follow(pos);
     lastUpdate = Date.now();
 }

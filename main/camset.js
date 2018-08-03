@@ -1,7 +1,9 @@
+// Creates a GameSet
 function createCamSet(type, p1, p2) {
 	return new CamSet(type, p1, p2);
 }
 
+// Collection of cameras - used for e.g. multiplayer games
 function CamSet(type, p1, p2) {
 	this.cams = [];
 
@@ -19,28 +21,33 @@ function CamSet(type, p1, p2) {
 	}
 }
 
+// Returns the cameras in this CamSet
 CamSet.prototype.getCams = function() {
 	return this.cams;
 }
 
+// Adds a GameCam
 CamSet.prototype.addGameCam = function(x, y, w, h) {
 	var cam = createGameCam(x, y, w, h);
 	this.cams.push(cam);
 	return cam;
 }
 
+// Updates all of the GameCams
 CamSet.prototype.update = function() {
 	for (var i = 0; i < this.cams.length; i++) {
 		this.cams[i].update();
 	}
 }
 
+// Draws the object/function to all of the GameCams
 CamSet.prototype.draw = function(toDraw) {
 	for (var i = 0; i < this.cams.length; i++) {
 		this.cams[i].draw(toDraw);
 	}
 }
 
+// Draws all of the GameCams to the canvas
 CamSet.prototype.drawToCanvas = function() {
 	for (var i = 0; i < this.cams.length; i++) {
 		this.cams[i].drawToCanvas();

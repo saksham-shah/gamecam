@@ -1,7 +1,9 @@
+// Creates a GameCam
 function createGameCam(x, y, w, h) {
     return new GameCam(x, y, w, h);
 }
 
+// Camera object for games
 function GameCam(x_, y_, w_, h_) {
     if (x_ === undefined) {
         x_ = 0;
@@ -39,7 +41,9 @@ GameCam.prototype.snapshot = function() {
     return this.screen.get();
 }
 
+// Follow the player, move with arrow, change zoom etc.
 GameCam.prototype.update = function() {
+    // You can change this to whatever you want
     if (this.toFollow) {
         this.x = this.toFollow.x - this.w / 2;
         this.y = this.toFollow.y - this.h / 2;
@@ -56,7 +60,11 @@ GameCam.prototype.update = function() {
     }
 }
 
-// Follows the position
+GameCam.prototype.setUpdate = function(updateF) {
+    this.update = updateF;
+}
+
+// Follows the position - if no pos is defined it stops following
 GameCam.prototype.follow = function(pos) {
     if (pos) {
         if (!pos.x || !pos.y) {
@@ -69,7 +77,7 @@ GameCam.prototype.follow = function(pos) {
     }
 }
 
-// Draws the object to the screen
+// Draws the object/function to the screen
 GameCam.prototype.draw = function(toDraw) {
     if (toDraw instanceof Function) {
         toDraw(this, this.screen);
@@ -96,6 +104,8 @@ GameCam.prototype.drawToCanvas = function(x, y) {
         this.gameclip = null;
     }
     image(img, x, y, this.w, this.h);
+
+    // Debug rectangle representing border of camera
     noFill();
     strokeWeight(4);
     stroke(255, 0, 0);
@@ -109,6 +119,7 @@ GameCam.prototype.getDrawPos = function(gameX, gameY) {
     return [drawX, drawY];
 };
 
+// Converts a game size to a draw size
 GameCam.prototype.getDrawSize = function(gameSize) {
     return gameSize * this.zoom;
 }

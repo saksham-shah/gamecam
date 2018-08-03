@@ -6,11 +6,11 @@ function CamSet(type, p1, p2) {
 	this.cams = [];
 
 	switch (type) {
-		case 1:
+		case ONE_PLAYER:
 			var cam = this.addGameCam(0, 0, width, height);
 			cam.follow(p1);
 			break;
-		case 2:
+		case TWO_PLAYER:
 			var cam1 = this.addGameCam(0, 0, width/2, height);
 			cam1.follow(p1);
 			var cam2 = this.addGameCam(width/2, 0, width/2, height);

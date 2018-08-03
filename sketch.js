@@ -10,7 +10,7 @@ function setup() {
 
     p1 = new Player(300, 200, true);
     p2 = new Player(300, 200, false);
-    cs = createCamSet(2, p1.pos, p2.pos);
+    cs = createCamSet(TWO_PLAYER, p1.pos, p2.pos);
     // pos = {
     //     x: 300,
     //     y: 200

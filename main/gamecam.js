@@ -20,6 +20,8 @@ function GameCam(x_, y_, w_, h_) {
     this.w = w_;
     this.h = h_;
 
+    this.defaultDrawX = this.x;
+    this.defaultDrawY = this.y;
     this.zoom = 1;
 
     this.screen = createGraphics(this.w, this.h);
@@ -27,10 +29,9 @@ function GameCam(x_, y_, w_, h_) {
     this.toFollow = null;
 
     this.latestFrames = [];
-
     this.lastSnap = 0;
-
     this.gameclip = null;
+    this.record = false;
 }
 
 // Converts the current GameCam screen into a p5 image object
@@ -50,24 +51,12 @@ GameCam.prototype.update = function() {
     }
     if (keyIsDown(87)) this.zoom += 0.05 * dt;
     if (keyIsDown(83)) this.zoom -= 0.05 * dt;
-    this.takeFrameSnap();
-}
-
-GameCam.prototype.takeFrameSnap = function() {
-    this.lastSnap += dt;
-    if (this.lastSnap >= 0.8) {
-        this.latestFrames.push(this.snapshot());
-        this.lastSnap = 0;
-        if (this.latestFrames.length > 300) {
-            this.latestFrames.splice(0, 1);
-        }
+    if (this.record) {
+        this.takeFrameSnap();
     }
 }
 
-GameCam.prototype.getGameClip = function() {
-    return new GameClip(this.latestFrames.slice());
-}
-
+// Follows the position
 GameCam.prototype.follow = function(pos) {
     if (pos) {
         if (!pos.x || !pos.y) {
@@ -80,8 +69,23 @@ GameCam.prototype.follow = function(pos) {
     }
 }
 
+// Draws the object to the screen
+GameCam.prototype.draw = function(toDraw) {
+    if (toDraw instanceof Function) {
+        toDraw(this, this.screen);
+    } else {
+        toDraw.draw(this, this.screen);
+    }
+}
+
 // Draws the GameCam screen to the canvas
-GameCam.prototype.draw = function(x, y) {
+GameCam.prototype.drawToCanvas = function(x, y) {
+    if (!x) {
+        x = this.defaultDrawX;
+    }
+    if (!y) {
+        y = this.defaultDrawY;
+    }
     if (this.gameclip) {
         var img = this.gameclip.next();
     } else {
@@ -96,9 +100,6 @@ GameCam.prototype.draw = function(x, y) {
     strokeWeight(4);
     stroke(255, 0, 0);
     rect(x, y, this.w, this.h);
-    // fill(255, 0, 0);
-    // noStroke();
-    // ellipse(x + this.w/2, y + this.h/2, 20);
 }
 
 // Converts a game position to a draw position
@@ -118,4 +119,26 @@ GameCam.prototype.getGamePos = function(drawX, drawY) {
     var gameX = (drawX - width / 2) / this.zoom + this.x;
     var gameY = (drawY - height / 2) / this.zoom + this.y;
     return [gameX, gameY];
+}
+
+// Toggles record boolean
+GameCam.prototype.record = function() {
+    this.record = !this.record;
+}
+
+// Takes a snapshot and records it
+GameCam.prototype.takeFrameSnap = function() {
+    this.lastSnap += dt;
+    if (this.lastSnap >= 0.8) {
+        this.latestFrames.push(this.snapshot());
+        this.lastSnap = 0;
+        if (this.latestFrames.length > 300) {
+            this.latestFrames.splice(0, 1);
+        }
+    }
+}
+
+// Returns the last 5 seconds of recording
+GameCam.prototype.getGameClip = function() {
+    return new GameClip(this.latestFrames.slice());
 }

@@ -7,7 +7,8 @@ function setup() {
 
     p1 = new Player(300, 200, true);
     p2 = new Player(300, 200, false);
-    cs = createCamSet(TWO_PLAYER, p1.pos, p2.pos);
+    cs = createCamSet(TWO_PLAYER, p1.pos, p2.pos, p1, p2, p1, p2);
+    // cs = createCamSet(ONE_PLAYER, p1.pos, p1, p1);
     lastUpdate = Date.now();
 }
 

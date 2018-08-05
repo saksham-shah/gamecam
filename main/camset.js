@@ -1,22 +1,29 @@
 // Creates a GameSet
-function createCamSet(type, p1, p2) {
-	return new CamSet(type, p1, p2);
+function createCamSet(type, p1, p2, z1, z2, a1, a2) {
+	return new CamSet(type, p1, p2, z1, z2, a1, a2);
 }
 
 // Collection of cameras - used for e.g. multiplayer games
-function CamSet(type, p1, p2) {
+function CamSet(type, p1, p2, z1, z2, a1, a2) {
 	this.cams = [];
 
 	switch (type) {
 		case ONE_PLAYER:
 			var cam = this.addGameCam(0, 0, width, height);
-			cam.follow(p1);
+			cam.follow(p1, POSITION);
+			cam.follow(p2, ZOOM);
+			cam.follow(z1, ROTATION);
 			break;
 		case TWO_PLAYER:
 			var cam1 = this.addGameCam(0, 0, width/2, height);
-			cam1.follow(p1);
+			console.log(z1);
+			cam1.follow(p1, POSITION);
+			cam1.follow(z1, ZOOM);
+			cam1.follow(a1, ROTATION);
 			var cam2 = this.addGameCam(width/2, 0, width/2, height);
-			cam2.follow(p2);
+			cam2.follow(p2, POSITION);
+			cam2.follow(z2, ZOOM);
+			cam2.follow(a2, ROTATION);
 			break;
 	}
 }

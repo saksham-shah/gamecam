@@ -215,25 +215,3 @@ GameCam.prototype.getMousePos = function() {
     var gameCentre = createVector(this.x + this.w / 2, this.y + this.h / 2);
     return offset.add(gameCentre);
 }
-
-// Toggles record boolean
-GameCam.prototype.record = function() {
-    this.record = !this.record;
-}
-
-// Takes a snapshot and records it
-GameCam.prototype.takeFrameSnap = function() {
-    this.lastSnap += dt;
-    if (this.lastSnap >= 0.8) {
-        this.latestFrames.push(this.snapshot());
-        this.lastSnap = 0;
-        if (this.latestFrames.length > 300) {
-            this.latestFrames.splice(0, 1);
-        }
-    }
-}
-
-// Returns the last 5 seconds of recording
-GameCam.prototype.getGameClip = function() {
-    return new GameClip(this.latestFrames.slice());
-}

@@ -80,43 +80,13 @@ GameCam.prototype.update = function() {
         this.screen.push();
         this.rotated = true;
 
-        // var originToGame = this.getGamePos(0, 0);
-        // console.log(originToGame);
-        // var cx = this.x + this.w / 2 - originToGame.x;
-        // var cy = this.y + this.h / 2 - originToGame.y;
         this.screen.rotate(this.rotation);
-        // var translation = correctRotation(cx, cy, this.rotation);
-        // this.screen.translate(translation.x, translation.y);
 
         var x = this.defaultDrawX + this.w / 2;
         var y = this.defaultDrawY + this.h / 2;
 
-        // this.screen.rotate(this.rotation);
-
         var translation = correctRotation(x, y, this.rotation);
         this.screen.translate(translation.x, translation.y);
-
-
-
-
-
-
-
-        // var origin = this.getDrawPos(0, 0);
-        // this.screen.translate(origin.x, origin.y);
-        // this.screen.rotate(this.rotation);
-        // var translation1 = correctRotation(origin.x, origin.y, this.rotation);
-        // this.screen.translate(-translation1.x, -translation1.y);
-        // var cx = this.x + this.w / 2;
-        // var cy = this.y + this.h / 2;
-        // // var translation =
-        // var translation = correctRotation(cx, cy, this.rotation);
-        // //
-        // // var dist = sqrt(cx * cx + cy * cy);
-        // // var newAngle = atan(cy / cx) + this.rotation;
-        // // var dx = cx - cos(newAngle) * dist;
-        // // var dy = cy - sin(newAngle) * dist;
-        // this.screen.translate(-translation.x, -translation.y);
     }
 }
 
@@ -132,8 +102,9 @@ function correctRotation(x, y, rotation) {
     var dv = p5.Vector.sub(v, v2)
     // var dx = x - v2.x
     // var dy = y - v2.y;
-    var superdv = dv.copy().rotate(-rotation);
-    return superdv;
+    // var rotateddv = dv.copy().rotate(-rotation);
+    dv.rotate(-rotation);
+    return dv;
 }
 
 GameCam.prototype.setUpdate = function(updateF) {
@@ -189,22 +160,9 @@ GameCam.prototype.draw = function(toDraw) {
 GameCam.prototype.drawToCanvas = function(x, y) {
     // this.screen.stroke(255);
     // this.screen.fill(255);
-    //
-    // var centre = {x: this.w / 2, y: this.h / 2}//this.getDrawPos(this.x + this.w / 2, this.y + this.h / 2);
-    // this.screen.line(0, 0, centre.x, centre.y);
-    // //
-    // if (this.rotated) {
-    //     // this.screen.pop();
-    //     // this.rotated = false;
-    // }
-    //
-    // var translation = correctRotation(centre.x, centre.y, this.rotation);
-    // // this.screen.translate(translation.x, translation.y);
-    // // this.screen.translate(translation.x, translation.y);
-    // // this.screen.ellipse(centre.x, centre.y, 10);
-    // this.screen.ellipse(centre.x + translation.x, centre.y + translation.y, 10);
-
-
+    // var mousePos = this.getMousePos();//this.getGamePos(mouseX, mouseY);
+    // var drawPos = this.getDrawPos(mousePos.x, mousePos.y);
+    // this.screen.ellipse(drawPos.x, drawPos.y, 10);
 
     if (!x) {
         x = this.defaultDrawX;
@@ -247,7 +205,15 @@ GameCam.prototype.getGamePos = function(drawX, drawY) {
     // Just the inverse function of getDrawPos
     var gameX = (drawX - width / 2) / this.zoom + this.x;
     var gameY = (drawY - height / 2) / this.zoom + this.y;
-    return [gameX, gameY];
+    return {x: gameX, y: gameY};
+}
+
+GameCam.prototype.getMousePos = function() {
+    var centre = createVector(this.defaultDrawX + this.w / 2, this.defaultDrawY + this.h / 2);
+    var mouseOnScreen = createVector(mouseX, mouseY);
+    var offset = p5.Vector.sub(mouseOnScreen, centre).rotate(-this.rotation);
+    var gameCentre = createVector(this.x + this.w / 2, this.y + this.h / 2);
+    return offset.add(gameCentre);
 }
 
 // Toggles record boolean

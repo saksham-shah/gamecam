@@ -29,7 +29,11 @@ function GameCam(x_, y_, w_, h_) {
     this.rotation = 0;
     this.rotated = false;
 
-    this.screen = createGraphics(this.w, this.h);
+    if (pixelDensity() == 4) {
+        this.screen = createGraphics(this.w * 2, this.h * 2);
+    } else {
+        this.screen = createGraphics(this.w, this.h);
+    }
 
     this.toFollow = null;
     this.posFollow = null;
@@ -53,7 +57,6 @@ GameCam.prototype.update = function() {
         this.screen.pop();
         this.rotated = false;
     }
-
 
     if (this.posFollow) {
         this.x = this.posFollow.x - this.w / 2;
@@ -91,18 +94,9 @@ GameCam.prototype.update = function() {
 }
 
 function correctRotation(x, y, rotation) {
-    // var dist = sqrt(x * x + y * y);
-    // var newAngle = atan(y / x) + rotation;
-    // var x2 = cos(newAngle) * dist;
-    // var y2 = sin(newAngle) * dist;
     var v = createVector(x, y);
     var v2 = v.copy().rotate(rotation);
-    // console.log(v.rotate(rotation).x);
-    // console.log(x2);
-    var dv = p5.Vector.sub(v, v2)
-    // var dx = x - v2.x
-    // var dy = y - v2.y;
-    // var rotateddv = dv.copy().rotate(-rotation);
+    var dv = p5.Vector.sub(v, v2);
     dv.rotate(-rotation);
     return dv;
 }
@@ -158,12 +152,6 @@ GameCam.prototype.draw = function(toDraw) {
 
 // Draws the GameCam screen to the canvas
 GameCam.prototype.drawToCanvas = function(x, y) {
-    // this.screen.stroke(255);
-    // this.screen.fill(255);
-    // var mousePos = this.getMousePos();//this.getGamePos(mouseX, mouseY);
-    // var drawPos = this.getDrawPos(mousePos.x, mousePos.y);
-    // this.screen.ellipse(drawPos.x, drawPos.y, 10);
-
     if (!x) {
         x = this.defaultDrawX;
     }
@@ -173,10 +161,10 @@ GameCam.prototype.drawToCanvas = function(x, y) {
     if (this.gameclip) {
         var img = this.gameclip.next();
     } else {
-        var img = this.snapshot();
+        var img = this.screen;
     }
     if (img === false) {
-        img = this.snapshot();
+        img = this.screen;
         this.gameclip = null;
     }
     image(img, x, y, this.w, this.h);
